@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://d4gavwq81shmv" path="res://scenes/MovementModifiers/conveyorZone/conveyor_zone_scene.tscn" id="7_r15pr"]
 [ext_resource type="PackedScene" uid="uid://ctf1yf3optph8" path="res://scenes/MovementModifiers/gravityZone/gravity_zone_scene.tscn" id="8_hixyl"]
 [ext_resource type="PackedScene" uid="uid://dw7ikjxmwgws1" path="res://scenes/ChatHud/chatHud.tscn" id="9_q5uyg"]
+[ext_resource type="PackedScene" uid="uid://dh053dcqsws0u" path="res://scenes/Lootables/LootableDash.tscn" id="10_r0a0i"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_fjbi6"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -310,6 +311,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.640645, 2.5000005, -64.202
 [node name="WallrunZone" type="Node3D" parent="TemplateMap/Map" unique_id=1432808364]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 100, 6, -28)
 
+[node name="CSGPolygon3D" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone" unique_id=1429896144]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1832428, -5.196595, 27.797678)
+use_collision = true
+collision_mask = 4
+polygon = PackedVector2Array(-1, 0, -1.3180981, 0.77362347, -0.8056488, 3.5522876, -0.082107544, 5.056001, 16.35405, 6.540877, 17.355438, -1.0805826, 0, 0, 0, 0)
+
 [node name="CSGBox3D12" type="CSGBox3D" parent="TemplateMap/Map/WallrunZone" unique_id=1659268676]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -16.029999, -1.223, -21.492886)
 use_collision = true
@@ -472,6 +479,12 @@ path_continuous_u = true
 path_u_distance = 1.0
 path_joined = false
 material = ExtResource("3_r0a0i")
+
+[node name="LootableDash" parent="TemplateMap/Map" unique_id=498832737 instance=ExtResource("10_r0a0i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 62.005325, 1.7220652, -28.983387)
+
+[node name="LootableDash2" parent="TemplateMap/Map" unique_id=830702950 instance=ExtResource("10_r0a0i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 56.311024, 1.8872223, -19.580212)
 
 [connection signal="pressed" from="Menu/PanelContainer/MarginContainer/VBoxContainer/Host" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="Menu/PanelContainer/MarginContainer/VBoxContainer/Join" to="." method="_on_join_pressed"]
