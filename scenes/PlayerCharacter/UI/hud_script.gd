@@ -22,6 +22,7 @@ class_name HUD
 @onready var dash_cooldown_label_text: Label = %DashCooldownLabelText
 @onready var wallrun_time_label_text : Label = %WallrunTimeLabelText
 @onready var frames_per_second_label_text: Label = %FramesPerSecondLabelText
+@onready var ping_text: Label = %PingText
 @onready var camera_rotation_label_text: Label = %CameraRotationLabelText
 @onready var current_fov_label_text: Label = %CurrentFOVLabelText
 @onready var camera_bob_vertical_offset_label_text: Label = %CameraBobVerticalOffsetLabelText
@@ -29,7 +30,7 @@ class_name HUD
 
 func _process(_delta : float) -> void:
 	display_current_FPS()
-	
+	display_ping_latency()
 	display_properties()
 	
 func display_properties() -> void:
@@ -57,7 +58,11 @@ func display_properties() -> void:
 	
 func display_current_FPS() -> void:
 	frames_per_second_label_text.set_text(str(Engine.get_frames_per_second()))
-	
+
+func display_ping_latency() -> void:
+	if ping_text:
+		ping_text.set_text(str(PingManager.current_ping_ms))
+
 func display_speed_lines(value : bool) -> void:
 	speed_lines_container.visible = value
 	

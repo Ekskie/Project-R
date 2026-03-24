@@ -1,6 +1,4 @@
 extends Node3D
-
-#class name
 class_name CameraObject 
 
 #camera variables
@@ -15,7 +13,6 @@ class_name CameraObject
 @export_range(0.0, 180.0, 0.01) var min_fov_val : float = 10.0
 @export_range(0.0, 180.0, 0.01) var max_fov_val : float = 170.0
 @export var cam_fov_per_state : Dictionary[String, Vector2] = {
-	#fov value, durationz
 	"Default" : Vector2(90.0, 0.2),
 	"Idle" : Vector2(90.0, 0.2),
 	"Crouch" : Vector2(90.0, 0.2),
@@ -35,7 +32,7 @@ var zoom_has_occured : bool = false
 @export_group("Tilt variables")
 @export var enable_forward_tilt : bool = true
 @export var enable_side_tilt : bool = true
-@export_range(0.0, 400.0, 0.1) var forward_move_tilt_divider : float = 260.0 #divider to add to the move speed calculated tilt value
+@export_range(0.0, 400.0, 0.1) var forward_move_tilt_divider : float = 260.0 
 @export_range(0.0, 7.0, 0.01) var forward_move_tilt_duration : float = 0.19
 @export_range(0.0, 2.0, 0.001) var forward_move_max_tilt_val : float = 2.0
 @export_range(0.0, 6.0, 0.1) var side_move_tilt_divider : float = 2.8
@@ -44,13 +41,15 @@ var zoom_has_occured : bool = false
 var tilt_tween : Tween
 var last_input_y : float
 @export var tilt_props_per_state : Dictionary[String, Vector2] = {
-	#lean value (in radians), lerp speed
 	"Default" : Vector2(0.0, 7.5),
 	"Slide" : Vector2(10.0, 7.5),
 	"Wallrun" : Vector2(16.0, 4.0)
 }
 
-#no need to apply different variables for each state for this one
+# Added to track base tilts independently to avoid destructive accumulation
+var tilt_x : float = 0.0 
+var tilt_z : float = 0.0 
+
 @export_group("Bob variables")
 @export var enable_headbob : bool = true
 @export_range(0.0, 0.15, 0.001) var bob_pitch : float = 0.05 #in degrees
@@ -79,13 +78,12 @@ var state : String
 @onready var hud : CanvasLayer = $"../HUD"
 
 func _ready() -> void:
-	# FIX: Disable input and processing if this camera doesn't belong to the local player!
 	if multiplayer.has_multiplayer_peer() and not play_char.is_multiplayer_authority():
 		set_process(false)
 		set_process_unhandled_input(false)
 		return
 		
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED) #set mouse mode as captured
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED) 
 	
 	camera.fov = fov
 	
@@ -93,15 +91,12 @@ func _ready() -> void:
 	input_actions_check()
 
 func build_default_keybinding() -> void:
-	#build it in runtime to ensure that export variables have been set
 	default_input_actions = {
 		zoom_action : [Key.KEY_Z],
 		mouse_mode_action : [Key.KEY_ESCAPE]
 	}
 
 func input_actions_check() -> void:
-	#check if the input actions written in the editor are the same as the ones registered in the Input map, and if they are written correctly
-	#if not, add it to runtime Input map with default keybindings
 	if check_on_ready_if_inputs_registered:
 		var registered_input_actions: Array[StringName] = []
 		for input_action in InputMap.get_actions():
@@ -117,8 +112,7 @@ func input_actions_check() -> void:
 					return OS.get_keycode_string(key)
 				)
 				
-				push_warning("'{input}' missing in InputMap, or input action wrongly named in the editor.\nAdding the '{input}' to runtime InputMap temporarily with the key/s: {keys}"
-				.format({"input": input_action, "keys": String(", ").join(key_names)}))
+				push_warning("'{input}' missing in InputMap, or input action wrongly named in the editor.\nAdding the '{input}' to runtime InputMap temporarily with the key/s: {keys}".format({"input": input_action, "keys": String(", ").join(key_names)}))
 				
 				InputMap.add_action(input_action)
 				for keycode in default_input_actions[input_action]:
@@ -126,113 +120,99 @@ func input_actions_check() -> void:
 					input_event_key.physical_keycode = keycode
 					InputMap.action_add_event(input_action, input_event_key)
 				
-func _unhandled_input(event) -> void:
-	# FIX: Extra safety check to prevent remote cameras from stealing mouse input
-	if not play_char.is_multiplayer_authority(): return
-	
-	#manage camera rotation (360 on x axis, blocked at specified values on y axis, to not having the character do a complete head turn, which will be kinda weird)
-	if event is InputEventMouseMotion:
-		rotate_y(-event.relative.x * (x_axis_sensibility / 10))
-		camera.rotate_x(-event.relative.y * (y_axis_sensibility / 10))
-		#use of deg_to_rad, because we change the x axis rotation with rotation,x, which use radians instead of degrees
-		camera.rotation.x = clamp(camera.rotation.x, deg_to_rad(max_up_angle_view), deg_to_rad(max_down_angle_view))
-		
 func _process(delta : float) -> void:
-	# FIX: Prevent remote cameras from bobbing, zooming, and tilting locally
 	if not play_char.is_multiplayer_authority(): return
 	
 	state = play_char.state_machine.curr_state_name
-	
 	tilt(delta)
-	
 	bob(delta)
-	
 	zoom()
-	
 	mouse_mode()
 	
 func tilt(delta : float) -> void:
+	# --- Forward/Backward Tilt (Tweened) ---
 	if state != "Fly" and state != "Slide" and state != "Wallrun":
 		if enable_forward_tilt:
-			##forward (forward and backward movement) tilt
-			#in most first person games, forward and backward tilt is not continious, but only applied at start of the movement
-			#using a lerp will be counter productive, so in that case, we use a tween, to apply a one time camera rotation
-			
-			#use if sign() in the case of analogic sticks used
 			var has_started_moving_forward = sign(play_char.input_direction.y) == 1 and sign(last_input_y) != 1
 			var has_started_moving_backward = sign(play_char.input_direction.y) == -1 and sign(last_input_y) != -1
 			
-			#forward or backward input
 			if has_started_moving_forward or has_started_moving_backward:
 				reset_tween()
-				var cam_x_rot_pre_tween : float = rotation.x
 				var tilt_offset : float = clamp((-play_char.input_direction.y * play_char.move_speed) / forward_move_tilt_divider, -forward_move_max_tilt_val, forward_move_max_tilt_val)
-				var tilt_target : float = clamp(cam_x_rot_pre_tween - tilt_offset, deg_to_rad(max_up_angle_view), deg_to_rad(max_down_angle_view))
+				var tilt_target : float = clamp(tilt_x - tilt_offset, max_up_angle_view, max_down_angle_view)
 				
-				tilt_tween.tween_property(self, "rotation:x", tilt_target, forward_move_tilt_duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-				tilt_tween.tween_property(self, "rotation:x", cam_x_rot_pre_tween, forward_move_tilt_duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+				# Animate our logical tracking property, NOT the actual raw node rotation yet
+				tilt_tween.tween_property(self, "tilt_x", tilt_target, forward_move_tilt_duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+				tilt_tween.tween_property(self, "tilt_x", 0.0, forward_move_tilt_duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 				
 				tilt_tween.finished.connect(Callable(tilt_tween, "kill"))
 		
 			last_input_y = play_char.input_direction.y
-			
-		if enable_side_tilt:
-			##side (left and right movement) tilt
-			#in most first person games, lateral/side tilt is continious, so we use a lerp
-			rotation_degrees.z = lerp(rotation_degrees.z,
-			clamp((-play_char.input_direction.x * play_char.move_speed) / side_move_tilt_divider, -side_move_max_tilt_val, side_move_max_tilt_val), 
-			side_move_tilt_speed * delta)
-			
-	#tilt for specific states, for example when wallrunning
+
+	# --- Side Tilt (Lerped) ---
+	var target_tilt_z : float = 0.0
+	var lerp_speed : float = tilt_props_per_state["Default"][1]
+
+	# Structure reorganized to prevent A/D lean and state lean fighting each other
 	if state in tilt_props_per_state.keys():
-		if state == "Wallrun" and play_char.side_check_raycast_collided != 0: #specific case for wallrun
-			rotation_degrees.z = lerp(rotation_degrees.z, tilt_props_per_state[state][0] * -play_char.side_check_raycast_collided, tilt_props_per_state[state][1] * delta)
+		if state == "Wallrun" and play_char.side_check_raycast_collided != 0: 
+			target_tilt_z = tilt_props_per_state[state][0] * -play_char.side_check_raycast_collided
 		else:
-			rotation_degrees.z = lerp(rotation_degrees.z, tilt_props_per_state[state][0], tilt_props_per_state[state][1] * delta)
+			target_tilt_z = tilt_props_per_state[state][0]
+		lerp_speed = tilt_props_per_state[state][1]
 	else:
-		#default camera rotation if no specific lean needs to be applied
-		rotation_degrees.z = lerp(rotation_degrees.z, tilt_props_per_state["Default"][0], tilt_props_per_state["Default"][1] * delta)
+		if enable_side_tilt and state != "Fly" and state != "Slide" and state != "Wallrun":
+			target_tilt_z = clamp((-play_char.input_direction.x * play_char.move_speed) / side_move_tilt_divider, -side_move_max_tilt_val, side_move_max_tilt_val)
+			lerp_speed = side_move_tilt_speed
+		else:
+			target_tilt_z = tilt_props_per_state["Default"][0]
+
+	tilt_z = lerp(tilt_z, target_tilt_z, lerp_speed * delta)
 			
 func reset_tween():
 	if tilt_tween and tilt_tween.is_running():
 		tilt_tween.kill()
 	tilt_tween = create_tween()
 	
-#i batantly copy pasted this code from StayAtHomeDev's "Godot FPS Series #2 - Camera effects" video
-#for more in depth explanation of what this code does, and why, check his video
 func bob(delta : float) -> void:
 	var bob_speed : float = Vector2(play_char.velocity.x, play_char.velocity.z).length()
 	if bob_speed > 0.1:
 		step_timer += delta * (bob_speed / bob_frequency)
-		#fmod purpose here is to create a continious cycle for every step
-		#by keeping the timer value between 0.0 and 1.0 
 		step_timer = fmod(step_timer, 1.0)
 	else:
 		step_timer = 0.0
+	
 	var bob_sinus : float = sin(step_timer * 2.0 * PI) * 0.5
 	
-	#ceiling check raycast used here to avoid camera clipping through ceiling when for example, play char is crouching
+	# Fix: Read the player's true mouse pitch so we don't overwrite mouse movements looking up/down
+	var base_pitch_deg : float = rad_to_deg(play_char.pitch)
+	
+	# Base rotations from tilt AND player pitch
+	var final_rot_x : float = base_pitch_deg + tilt_x
+	var final_rot_z : float = tilt_z
+	var final_v_offset : float = 0.0
+	
 	if enable_headbob and state != "Idle" and state != "Jump" and state != "Slide" and state != "Dash" and state != "Fly" and state != "Wallrun" and !play_char.ceiling_check.is_colliding():
-		#the bobbing scale is related to the player character movement speed
-		
-		#convert bob_pitch and bob_roll from degrees to radians, for a smoother bobbing effect
 		
 		var pitch_delta : float = bob_sinus * deg_to_rad(bob_pitch) * bob_speed
-		var pitch_delta_apply : float = clamp(rotation_degrees.x - pitch_delta, max_up_angle_view, max_down_angle_view)
-		rotation_degrees.x = pitch_delta_apply
+		final_rot_x = clamp(base_pitch_deg + tilt_x - pitch_delta, max_up_angle_view, max_down_angle_view)
 		
 		var roll_delta : float = bob_sinus * deg_to_rad(bob_roll) * bob_speed
-		var roll_delta_apply : float = clamp(rotation_degrees.z - roll_delta, max_up_angle_view, max_down_angle_view)
-		rotation_degrees.z = roll_delta_apply
+		final_rot_z = clamp(tilt_z - roll_delta, max_up_angle_view, max_down_angle_view)
 		
+		# Assign exact absolute height
 		var bob_height : float = (bob_sinus * bob_speed) / bob_height_divider
-		camera.v_offset += bob_height
-		camera.v_offset = clamp(camera.v_offset, 0.0, cam_max_v_offset)
+		final_v_offset = clamp(abs(bob_height), 0.0, cam_max_v_offset)
 		
-	elif enable_headbob and (state == "Idle" or state == "Jump" or state == "Slide" or state == "Dash" or state == "Fly" or state == "Wallrun" or play_char.ceiling_check.is_colliding()):
-		#smoothly reset position vertical offset
-		#if not applied, the camera can be upper the play char body for listed above states, resulting in wrong view
-		if camera.v_offset != 0.0: camera.v_offset = move_toward(camera.v_offset, 0.0, cam_v_offset_to_0_speed * delta)
+	# Apply final offset (smooth return to 0 if stopped)
+	if final_v_offset == 0.0 and camera.v_offset != 0.0:
+		camera.v_offset = move_toward(camera.v_offset, 0.0, cam_v_offset_to_0_speed * delta)
+	elif final_v_offset != 0.0:
+		camera.v_offset = final_v_offset
+
+	# Safely apply final compiled rotations
+	rotation_degrees.x = final_rot_x
+	rotation_degrees.z = final_rot_z
 		
 func zoom() -> void:
 	if Input.is_action_just_pressed(zoom_action):
@@ -242,14 +222,10 @@ func zoom() -> void:
 		change_fov()
 		
 func change_fov() -> void:
-	#for state related fov change requests
-	#if zoom is occuring, pass the rest of the function
 	if zoom_has_occured:
 		return
 	
-	#manage the fov changes relative to a specific state
 	state = play_char.state_machine.curr_state_name
-	
 	camera.fov = clamp(camera.fov, min_fov_val, max_fov_val)
 	
 	var fov_change_tween : Tween = get_tree().create_tween()
@@ -259,20 +235,15 @@ func change_fov() -> void:
 			fov_change_tween.tween_property(camera, "fov", cam_fov_per_state[state][0], cam_fov_per_state[state][1])
 			fov_change_tween.finished.connect(Callable(fov_change_tween, "kill"))
 		else:
-			#default value used for case like this one, when you need to force a fov change for a state that doesn't have his own setted fov
 			if state != "Jump" and state != "Inair" and state != "Wallrun":
 				fov_change_tween.tween_property(camera, "fov", cam_fov_per_state["Default"][0], cam_fov_per_state["Default"][1])
 				fov_change_tween.finished.connect(Callable(fov_change_tween, "kill"))
 			else:
-				#not a great piece of code, but that's the most effective and simple way a found to solve the issue
-				#that if you dezoom while being in Jump in Inair state, since these two states doesn't have a fixed fov
-				#the fov would go back to the default one, even if play char jump with the Run state fov
-				
 				var walk_or_run_state : String
 				if play_char.walk_or_run == "WalkState":
 					walk_or_run_state = "Walk"
 				if play_char.walk_or_run == "RunState":
-					if (play_char.velocity.x < 1.0 and play_char.velocity.x > -1.0 and play_char.velocity.z < 1.0 and play_char.velocity.z > -1.0): #play char not moving at all on x and z axis
+					if (play_char.velocity.x < 1.0 and play_char.velocity.x > -1.0 and play_char.velocity.z < 1.0 and play_char.velocity.z > -1.0):
 						walk_or_run_state = "Walk"
 					else:
 						walk_or_run_state = "Run"
@@ -280,14 +251,12 @@ func change_fov() -> void:
 				fov_change_tween.tween_property(camera, "fov", cam_fov_per_state[walk_or_run_state][0], cam_fov_per_state[walk_or_run_state][1])
 				fov_change_tween.finished.connect(Callable(fov_change_tween, "kill"))
 				
-	#doesn't set zoom boolean to false right now, because we want the zoom to occur whatever the current state of play char is
 	if zoom_on and !zoom_has_occured:
 		zoom_has_occured = true
 		fov_change_tween.tween_property(camera, "fov", camera.fov - zoom_val, zoom_duration)
 		fov_change_tween.finished.connect(Callable(fov_change_tween, "kill"))
 		
 func mouse_mode() -> void:
-	#manage the mouse mode (visible = can use mouse on the screen, captured = mouse not visible and locked in at the center of the screen)
 	if Input.is_action_just_pressed(mouse_mode_action): mouse_free = !mouse_free
 	if !mouse_free: Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	else: Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)

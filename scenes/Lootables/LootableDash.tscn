@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://dh053dcqsws0u"]
+
+[ext_resource type="Script" uid="uid://b85jahnqs3bos" path="res://scenes/Lootables/lootable_dash.gd" id="1_d4ery"]
+[ext_resource type="PackedScene" uid="uid://bugaeqf18l7lj" path="res://scenes/Lootables/flipflops_mockup_plain_texture.glb" id="2_o6vcg"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_ly04k"]
+radius = 1.6384153
+
+[node name="LootableDash" type="Area3D" unique_id=498832737]
+collision_layer = 3
+collision_mask = 3
+script = ExtResource("1_d4ery")
+
+[node name="Sketchfab_Scene" parent="." unique_id=1759994224 instance=ExtResource("2_o6vcg")]
+transform = Transform3D(0.08, 0, 0, 0, 0.08, 0, 0, 0, 0.08, 0, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1804952488]
+shape = SubResource("SphereShape3D_ly04k")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

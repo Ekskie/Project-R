@@ -1,0 +1,849 @@
+[gd_scene format=3 uid="uid://kt7hquwnsn4w"]
+
+[ext_resource type="Script" uid="uid://smr648vxugcw" path="res://scenes/world2.gd" id="1_nwrhd"]
+[ext_resource type="PackedScene" uid="uid://dw7ikjxmwgws1" path="res://scenes/ChatHud/chatHud.tscn" id="2_in1ei"]
+[ext_resource type="PackedScene" uid="uid://vk8e3ro7mpdp" path="res://scenes/outer_wall.tscn" id="2_nwrhd"]
+[ext_resource type="Material" uid="uid://3ub3li5nvjsw" path="res://assets/Arts/structure_material_2.tres" id="3_x6nmu"]
+[ext_resource type="PackedScene" uid="uid://b84t3rpy4cau8" path="res://scenes/MovementModifiers/jumpPads/verticalJumpPad/vertical_jump_pad_scene.tscn" id="4_53cgy"]
+[ext_resource type="Material" uid="uid://bnka266lmacek" path="res://assets/Arts/structure_material_red.tres" id="5_53cgy"]
+[ext_resource type="PackedScene" uid="uid://ct3rwravhrwk1" path="res://scenes/MovementModifiers/jumpPads/directionalJumpPad/directional_jump_pad_scene.tscn" id="7_l8s55"]
+[ext_resource type="PackedScene" uid="uid://dh053dcqsws0u" path="res://scenes/Lootables/LootableDash.tscn" id="8_3m4ir"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_in1ei"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_rp6rt"]
+sky_material = SubResource("ProceduralSkyMaterial_in1ei")
+
+[sub_resource type="Environment" id="Environment_x6nmu"]
+background_mode = 2
+sky = SubResource("Sky_rp6rt")
+tonemap_mode = 2
+glow_enabled = true
+
+[node name="SquamMap" type="Node" unique_id=1669361644 node_paths=PackedStringArray("main_menu", "hud", "address_entry", "port_entry", "nickname", "world", "players_spawn")]
+script = ExtResource("1_nwrhd")
+names = Array[String](["Ral", "ph"])
+main_menu = NodePath("Menu")
+hud = NodePath("Chat_HUD")
+address_entry = NodePath("Menu/PanelContainer/MarginContainer/VBoxContainer/Address")
+port_entry = NodePath("Menu/PanelContainer/MarginContainer/VBoxContainer/Port")
+nickname = NodePath("Menu/PanelContainer/MarginContainer/VBoxContainer/Name")
+world = NodePath("TemplateMap")
+players_spawn = NodePath("TemplateMap/PlayerCharacter")
+
+[node name="Menu" type="CanvasLayer" parent="." unique_id=1285021404]
+layer = 4
+
+[node name="PanelContainer" type="PanelContainer" parent="Menu" unique_id=69667489]
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -172.0
+offset_right = 311.0
+offset_bottom = 172.0
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Menu/PanelContainer" unique_id=808682824]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Menu/PanelContainer/MarginContainer" unique_id=513844381]
+layout_mode = 2
+
+[node name="Host" type="Button" parent="Menu/PanelContainer/MarginContainer/VBoxContainer" unique_id=1079276926]
+layout_mode = 2
+text = "Host"
+
+[node name="Join" type="Button" parent="Menu/PanelContainer/MarginContainer/VBoxContainer" unique_id=1227204868]
+layout_mode = 2
+text = "Join"
+
+[node name="Address" type="LineEdit" parent="Menu/PanelContainer/MarginContainer/VBoxContainer" unique_id=2031544462]
+unique_name_in_owner = true
+layout_mode = 2
+text = "localhost"
+placeholder_text = "Address"
+emoji_menu_enabled = false
+clear_button_enabled = true
+
+[node name="Port" type="LineEdit" parent="Menu/PanelContainer/MarginContainer/VBoxContainer" unique_id=1577182013]
+layout_mode = 2
+placeholder_text = "Port"
+emoji_menu_enabled = false
+clear_button_enabled = true
+
+[node name="HSeparator" type="HSeparator" parent="Menu/PanelContainer/MarginContainer/VBoxContainer" unique_id=426942535]
+layout_mode = 2
+
+[node name="Name" type="LineEdit" parent="Menu/PanelContainer/MarginContainer/VBoxContainer" unique_id=1962509227]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Chat_HUD" parent="." unique_id=677494332 instance=ExtResource("2_in1ei")]
+visible = false
+
+[node name="Players" type="MultiplayerSpawner" parent="." unique_id=272429955]
+_spawnable_scenes = PackedStringArray("uid://bwggrf7sbmkcv")
+spawn_path = NodePath("../TemplateMap/PlayerCharacter")
+
+[node name="Objects" type="MultiplayerSpawner" parent="." unique_id=1301671419]
+spawn_path = NodePath("../TemplateMap")
+
+[node name="TemplateMap" type="Node3D" parent="." unique_id=907520887]
+
+[node name="Environment" type="Node3D" parent="TemplateMap" unique_id=104756806]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="TemplateMap/Environment" unique_id=706389596]
+environment = SubResource("Environment_x6nmu")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="TemplateMap/Environment" unique_id=784671552]
+transform = Transform3D(-0.86602384, -0.43301564, 0.2500005, 0, 0.49999815, 0.8660265, -0.50000286, 0.7499995, -0.4330103, -22, 59.414856, 4)
+shadow_enabled = true
+
+[node name="PlayerCharacter" type="Node3D" parent="TemplateMap" unique_id=202358879]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.7646, 1.50542, -19.959)
+
+[node name="Map" type="Node3D" parent="TemplateMap" unique_id=2020784554]
+
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="TemplateMap/Map" unique_id=1902352136]
+use_collision = true
+collision_mask = 2
+radius = 170.0664
+
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="TemplateMap/Map/CSGCylinder3D" unique_id=27377944]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -39.224174, 1.8117676, -18.282127)
+height = 2.3032227
+
+[node name="CSGCylinder3D2" type="CSGCylinder3D" parent="TemplateMap/Map/CSGCylinder3D" unique_id=317536447]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -44.526295, 1.8251953, -15.747773)
+height = 2.2763672
+
+[node name="CSGCylinder3D3" type="CSGCylinder3D" parent="TemplateMap/Map/CSGCylinder3D" unique_id=1818939332]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -44.526295, 1.8251953, -28.902344)
+height = 2.2763672
+
+[node name="CSGCylinder3D4" type="CSGCylinder3D" parent="TemplateMap/Map/CSGCylinder3D" unique_id=1767573007]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -38.458057, 1.8251953, -28.705265)
+height = 2.2763672
+
+[node name="CSGCylinder3D2" type="CSGCylinder3D" parent="TemplateMap/Map" unique_id=720624684]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.32964182, 89.30356, -0.6179552)
+visible = false
+use_collision = true
+collision_mask = 2
+radius = 170.0664
+
+[node name="VerticalJumpPad" parent="TemplateMap/Map/CSGCylinder3D2" unique_id=308407493 instance=ExtResource("4_53cgy")]
+transform = Transform3D(-0.8664004, 0, 0.49934992, 0, 1, 0, -0.49934992, 0, -0.8664004, 52.741062, 34.88664, -65.17213)
+bounce_force = 50.0
+
+[node name="outer-wall" parent="TemplateMap/Map" unique_id=1368446115 instance=ExtResource("2_nwrhd")]
+transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, -0.010120392, 45.471157, 4.2148323)
+
+[node name="WallrunZone" type="Node3D" parent="TemplateMap/Map" unique_id=136237096]
+
+[node name="WalSlideFree" type="Node3D" parent="TemplateMap/Map/WallrunZone" unique_id=225853864]
+
+[node name="CSGPolygon3D37" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/WalSlideFree" unique_id=204226341]
+transform = Transform3D(0.9848077, -0.17364818, 0, -7.590403e-09, -4.304731e-08, 1, -0.17364818, -0.9848077, -4.371139e-08, 2.1770582, 10.875493, 24.883875)
+material_override = ExtResource("5_53cgy")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-17, -101, -5, -79, 18, -74, 13, -85, 23.105448, -95.99866, 28, -92, 32, -98, 24.814056, -105.167435, 33, -120, 15.211764, -124.39847, -22, -122)
+depth = 10.0
+
+[node name="CSGPolygon3D40" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/WalSlideFree" unique_id=2146533977]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -68.815414, 11.362661, 60.15953)
+material_override = ExtResource("5_53cgy")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-16.398727, -27.66359, -13.978775, 3.6352348, -31.800934, 18.081955, -30.624207, 27.691597, 1.4900284, 14.251373, -7.0006027, -33.159264)
+depth = 10.0
+
+[node name="CSGPolygon3D45" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/WalSlideFree" unique_id=492319585]
+transform = Transform3D(0.62483394, -0.78075767, -3.4128e-08, 0, -4.371139e-08, 1, -0.78075767, -0.62483394, -2.7312359e-08, -41.738842, 21.362661, 39.477913)
+material_override = ExtResource("5_53cgy")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-13.978775, 3.6352348, -31.800934, 18.081955, -30.624207, 27.691597, 1.4900284, 14.251373)
+depth = 10.0
+
+[node name="CSGPolygon3D46" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/WalSlideFree" unique_id=1373299572]
+transform = Transform3D(0.62483394, -0.78075767, -3.4128e-08, 0, -4.371139e-08, 1, -0.78075767, -0.62483394, -2.7312359e-08, -41.738842, 31.362661, 39.477913)
+material_override = ExtResource("5_53cgy")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-21.18364, 4.0050106, -28.361206, 9.355139, -20.550728, 23.401918, -11.705597, 20.23657)
+depth = 10.0
+
+[node name="CSGPolygon3D33" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/WalSlideFree" unique_id=1110931016]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 38, 10.875494, -5.0000005)
+material_override = ExtResource("5_53cgy")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-17, -14, -15, -5, -6, 9, 2.8514748, 3.4496794, 8, -5, 18, -7, 29, -6, 35.980408, -5.0493126, 37, -11, 43.826065, -9.495188, 49.579544, -0.60343647, 43.683807, 9.1556425, 34.361908, 9.477088, 35.0048, 15.905979, 55, 13, 56, -9, 41, -18, 37, -29, 23.893562, -33.134094, 24, -19, 9, -16, -10, -36, -17, -29, -4, -15)
+depth = 10.0
+
+[node name="CSGPolygon3D38" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/WalSlideFree" unique_id=1495336109]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 38.19033, 20.724195, -5.203755)
+material_override = ExtResource("5_53cgy")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-17, -14, -15, -5, -6, 9, 2.8514748, 3.4496794, 8, -5, 6.5395164, -18.018667, -10, -36, -17, -29, -4, -15)
+depth = 10.0
+
+[node name="CSGPolygon3D41" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/WalSlideFree" unique_id=1413196594]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 38, 30.875494, -5.0000005)
+material_override = ExtResource("5_53cgy")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-8.247145, 5.4010572, 2.0985527, -1.5031958, 1.108532, -29.6027, -3.9074745, -33.737568, -11.856281, -23.435493, -4, -15, -11.069485, -12.132225, -8.558544, 2.7566571)
+depth = 10.0
+
+[node name="CSGPolygon3D36" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/WalSlideFree" unique_id=2055036926]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 38, 19.875494, -5.0000005)
+material_override = ExtResource("5_53cgy")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(43.826065, -9.495188, 49.579544, -0.60343647, 43.683807, 9.1556425, 34.361908, 9.477088, 35.0048, 15.905979, 55, 13, 56, -9, 41, -18, 37, -29, 30.854477, -30.791912, 30.292038, -12.445663)
+depth = 10.0
+
+[node name="CSGPolygon3D44" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/WalSlideFree" unique_id=1799143482]
+transform = Transform3D(-0.04138735, -0.99914324, -4.367394e-08, 0, -4.371139e-08, 1, -0.99914324, 0.04138735, 1.8090986e-09, -93.79852, 10.715761, -3.4606895)
+material_override = ExtResource("5_53cgy")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-13.965586, -9.678406, -16.352371, 6.0725536, -14.440657, 19.02893, -23.102875, 18.943718, -25.580202, 28.815117, -8.680681, 29.447197, 5.2641163, 28.425522, 6.4850674, 20.382309, -2.6755075, 18.985634, -4.638817, 3.747734, 1.7427521, -10.995125)
+depth = 10.0
+
+[node name="CSGPolygon3D47" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/WalSlideFree" unique_id=928869545]
+transform = Transform3D(-0.04138735, -0.99914324, -4.367394e-08, 0, -4.371139e-08, 1, -0.99914324, 0.04138735, 1.8090986e-09, -93.79852, 20.715761, -3.4606895)
+material_override = ExtResource("5_53cgy")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-13.965586, -9.678406, -16.352371, 6.0725536, -14.440657, 19.02893, -2.6755075, 18.985634, -4.638817, 3.747734, 1.7427521, -10.995125)
+depth = 10.0
+
+[node name="CSGPolygon3D30" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/WalSlideFree" unique_id=377725917]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -23, 10.875493, -74.81318)
+material_override = ExtResource("5_53cgy")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-30.399933, -25.39478, -39.266766, -11.90921, 1.0702419, 24.21178, 11.105238, 21.26567, 24.196114, 32.982414, 32.295376, 28.779503, 30.948074, 11.115974, 43.82161, 4.2854233, 35.328323, -8.404274, 7.3025913, 2.171257, -5.3382645, -8.289345)
+depth = 10.0
+
+[node name="CSGPolygon3D32" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/WalSlideFree" unique_id=1279382388]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -23, 20.875492, -74.81318)
+material_override = ExtResource("5_53cgy")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-30.399933, -25.39478, -39.266766, -11.90921, 1.0702419, 24.21178, 11.105238, 21.26567, 24.196114, 32.982414, 32.295376, 28.779503, 30.948074, 11.115974, 39.37901, 7.9592667, 29.66993, -6.695221, 7.3025913, 2.171257, -5.3382645, -8.289345)
+depth = 10.0
+
+[node name="CSGPolygon3D34" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/WalSlideFree" unique_id=1280034210]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 112, 9.875496, 43)
+material_override = ExtResource("5_53cgy")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-27, -3, -38.791115, -1.1536102, -37.867004, 5.208008, -21.499115, 10.802095, -8, 28, -4, 45, 5, 46, 6.050186, 37.543232, 15, 37, 16, 29, 5.7721863, 28.925518, 6.328171, 6.9642563, 28, -2, 21, -22, -29, -23)
+depth = 10.0
+
+[node name="CSGPolygon3D35" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/WalSlideFree" unique_id=1624533509]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 112, 19.875496, 43)
+material_override = ExtResource("5_53cgy")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-27, -3, -38.791115, -1.1536102, -37.867004, 5.208008, -21.499115, 10.802095, -8, 28, -4, 45, 5, 46, 0.6810303, 7.48238, -5.38398, 6.820839, -8.260796, -22.60672, -29, -23)
+depth = 10.0
+
+[node name="CSGPolygon3D24" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/WalSlideFree" unique_id=1863765567]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -23, 10.875493, -31)
+material_override = ExtResource("5_53cgy")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-4, -6, -9.178413, 7.637375, 1.0702419, 24.21178, 10.629526, 29.999672, 13.774303, 25.42545, 9.771862, 18.850006, 19.837465, 15.045078, 18.062637, 5.9850082, 6.383335, 5.9572115, 4, 0, 5, -7)
+depth = 10.0
+
+[node name="CSGPolygon3D25" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/WalSlideFree" unique_id=1049632235]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -23, 20.875492, -31)
+material_override = ExtResource("5_53cgy")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-4.872574, -1.8322334, -9.178413, 7.637375, 1.0702419, 24.21178, 10.629526, 29.999672, 13.774303, 25.42545, 9.771862, 18.850006, 19.837465, 15.045078, 18.932093, 9.354717, 4.6459084, 10.783337, 2.360117, 0.21155739)
+depth = 10.0
+
+[node name="CSGPolygon3D26" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/WalSlideFree" unique_id=484468251]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -23, 30.792145, -31)
+material_override = ExtResource("5_53cgy")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(1.0702419, 24.21178, 7.079129, 27.831766, 12.2755375, 23.340723, 9.771862, 18.850006, 15.570572, 16.530401, 15.926054, 10.742853, 18.932243, 10.464922, 18.24788, -0.6089268, 7.5315447, -3.109047)
+depth = 10.0
+
+[node name="CSGPolygon3D28" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/WalSlideFree" unique_id=847224288]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -23, 30.792145, -67.05124)
+material_override = ExtResource("5_53cgy")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-10.93795, 34.85549, -5.301502, 40.749603, 10.408076, 28.842194, 28.137482, 50.15866, 35.937286, 45.038284, 31.703909, 26.295952, 23.696173, 26.494202, 17.109104, 15.196375, 16.133795, 10.53866, 4.6459084, 10.783337)
+depth = 10.0
+
+[node name="CSGPolygon3D29" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/WalSlideFree" unique_id=891726284]
+transform = Transform3D(0.5413267, 0.8408123, 3.675307e-08, 0, -4.371139e-08, 1, 0.8408123, -0.5413267, -2.3662139e-08, -71.23537, 30.792145, -61.05124)
+material_override = ExtResource("5_53cgy")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(0.67936707, 24.05444, 8.545776, 24.24934, 9.671219, 16.784096, 15.992935, 17.491415, 16.133795, 10.53866, 3.3771667, 8.457565)
+depth = 10.0
+
+[node name="CSGPolygon3D14" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/WalSlideFree" unique_id=809710891]
+transform = Transform3D(0.258819, -0.96592575, 0, -4.222196e-08, -1.1313338e-08, 0.99999994, -0.9659258, -0.25881898, -4.371138e-08, -63.474014, 10.875492, 6.8685684)
+material_override = ExtResource("5_53cgy")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-34, -19, -35, -14, -20, -10, -13, 1, 14, 4, 15.447041, -18.777733, 5.927475, -17.441761, 5.3931446, -7.5748787, -6, -12, -17, -15)
+depth = 10.0
+
+[node name="CSGPolygon3D15" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/WalSlideFree" unique_id=464459177]
+transform = Transform3D(0.258819, -0.96592575, 0, -4.222196e-08, -1.1313338e-08, 0.99999994, -0.9659258, -0.25881898, -4.371138e-08, -63.474014, 20.875492, 6.8685684)
+material_override = ExtResource("5_53cgy")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(5.117237, 2.8140259, 14, 4, 15.447041, -18.777733, 5.927475, -17.441761, 5.3931446, -7.5748787)
+depth = 10.0
+
+[node name="CSGPolygon3D16" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/WalSlideFree" unique_id=641287723]
+transform = Transform3D(0.258819, -0.96592575, 0, -4.222196e-08, -1.1313338e-08, 0.99999994, -0.9659258, -0.25881898, -4.371138e-08, -63.474014, 30.875492, 6.8685684)
+material_override = ExtResource("5_53cgy")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(14.780504, -7.3072624, 15.447041, -18.777733, 5.927475, -17.441761, 5.3931446, -7.5748787)
+depth = 10.0
+
+[node name="CSGPolygon3D22" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/WalSlideFree" unique_id=1645330913]
+transform = Transform3D(1, 0, 0, 0, -4.3711385e-08, 0.99999994, 0, -0.99999994, -4.3711385e-08, -0.47401428, 10.875494, 30.868568)
+material_override = ExtResource("5_53cgy")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-34, -19, -35, -14, -20, -10, -13, 1, 4, 4, 17, -13, 6, -17, 2, -7, -8, -7, -12, -20)
+depth = 10.0
+
+[node name="CSGPolygon3D23" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/WalSlideFree" unique_id=603254184]
+transform = Transform3D(1, 0, 0, 0, -4.3711385e-08, 0.99999994, 0, -0.99999994, -4.3711385e-08, -0.47401428, 20.875494, 30.868568)
+material_override = ExtResource("5_53cgy")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-28.434916, -12.159012, -20, -10, -13, 1, 4, 4, 17, -13, 9.531256, -15.708149, 2.2590263, -2.4635391, -9.289415, -3.2274704, -16.463793, -19.88211, -26.740532, -19.249626)
+depth = 10.0
+
+[node name="CSGPolygon3D43" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/WalSlideFree" unique_id=1484434912]
+transform = Transform3D(1, 0, 0, 0, -4.3711385e-08, 0.99999994, 0, -0.99999994, -4.3711385e-08, -0.47401428, 30.875494, 30.868568)
+material_override = ExtResource("5_53cgy")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(4, 4, 17, -13, 6.7826357, -17.629911, -2.6220326, -4.698023)
+depth = 10.0
+
+[node name="CSGPolygon3D42" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/WalSlideFree" unique_id=1669561952]
+transform = Transform3D(1, 0, 0, 0, -4.3711385e-08, 0.99999994, 0, -0.99999994, -4.3711385e-08, -0.47401428, 30.875494, 30.868568)
+material_override = ExtResource("5_53cgy")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-28.434916, -12.159012, -20, -10, -16.463793, -19.88211, -26.740532, -19.249626)
+depth = 10.0
+
+[node name="CSGPolygon3D27" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/WalSlideFree" unique_id=1087726930]
+transform = Transform3D(0.614299, -0.78907335, -3.4491492e-08, 0, -4.371139e-08, 1, -0.78907335, -0.614299, -2.6851863e-08, -72.32472, 10.875493, -72.56798)
+material_override = ExtResource("5_53cgy")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-4, -6, -15.006351, 17.966919, -9.540146, 31.303833, 10.06319, 17.019073, 18.217777, 21.07109, 20.286972, 9.569092, 6.383335, 5.9572115, 4, 0, 5, -7)
+depth = 10.0
+
+[node name="CSGPolygon3D31" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/WalSlideFree" unique_id=934697359]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 114, 10.87549, -22)
+material_override = ExtResource("5_53cgy")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-16, 8, -34, 9, -33.22812, 15.249321, -9, 16, 5, 7, 24, 22, 28, 8, 7, -7)
+depth = 10.0
+
+[node name="CSGPolygon3D39" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/WalSlideFree" unique_id=441818176]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -35, 11.33135, 122)
+material_override = ExtResource("5_53cgy")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-31.16211, -15.147766, -28.546112, 4.210663, -8.141262, 2.6410522, 12, 25, 26, 18, 22, 0, 14.525696, 3.1912155, 7, -3, -6, -19)
+depth = 10.0
+
+[node name="NoSlide" type="Node3D" parent="TemplateMap/Map/WallrunZone" unique_id=1711566355]
+
+[node name="CSGPolygon3D" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=869041382]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -8.124506, 0)
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+depth = 10.0
+
+[node name="CSGPolygon3D2" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=294760384]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -8.124506, 0)
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+depth = 10.0
+
+[node name="CSGPolygon3D3" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=1927042529]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -8.124506, 0)
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+depth = 10.0
+
+[node name="CSGPolygon3D4" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=1924211377]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -8.124506, 0)
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+depth = 10.0
+
+[node name="CSGPolygon3D5" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=1310218379]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -8.124506, 0)
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+depth = 10.0
+
+[node name="CSGPolygon3D6" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=1236237306]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -8.124506, 0)
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+depth = 10.0
+
+[node name="CSGPolygon3D8" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=1769126034]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -8.124506, 0)
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+depth = 10.0
+
+[node name="CSGPolygon3D9" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=486522298]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -8.124506, 0)
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+depth = 10.0
+
+[node name="CSGPolygon3D10" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=1355592407]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -8.124506, 0)
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+depth = 10.0
+
+[node name="CSGPolygon3D11" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=1205994112]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -8.124506, 0)
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+depth = 10.0
+
+[node name="CSGPolygon3D12" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=798641566]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -8.124506, 0)
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+depth = 10.0
+
+[node name="CSGPolygon3D13" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=2068511794]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -8.124506, 0)
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+depth = 10.0
+
+[node name="CSGPolygon3D7" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=1312300721]
+transform = Transform3D(6.362594, 0, 0, 0, -3.5454858e-07, 1, 0, -8.111126, -4.371139e-08, 43.582443, 11.15234, -21.656315)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(1, -1, -1, 2, 0.1767354, 3.5471733, 0.99304056, 2.9986002, 1, 2, 2, 1, 2, 0)
+depth = 10.0
+
+[node name="CSGPolygon3D14" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=1852181088]
+transform = Transform3D(6.362594, 0, 0, 0, -3.5454858e-07, 1, 0, -8.111126, -4.371139e-08, 43.582443, 20.15234, -21.656315)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(1.1764374, -0.60305977, -0.39088774, 1.8641222, 1, 2, 2, 1, 2, 0)
+depth = 10.0
+
+[node name="CSGPolygon3D34" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=200996838]
+transform = Transform3D(6.362594, 0, 0, 0, -3.5454858e-07, 1, 0, -8.111126, -4.371139e-08, 43.582443, 29.15234, -21.656315)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(0.4912467, 0.48898983, -0.39088774, 1.8641222, 1, 2, 2, 1)
+depth = 10.0
+
+[node name="CSGPolygon3D26" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=1248918510]
+transform = Transform3D(6.362594, 0, 0, 0, -3.5454858e-07, 1, 0, -8.111126, -4.371139e-08, 104.681725, 12.15234, -51.656315)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(1, -1, -0.8923874, 0.8990178, 0.53617096, 1.9856606, 1.0989361, 1.5781698, 2.960392, 2.7666855, 3.9560509, 1.6460857, 1.7482834, 1.0348487, 2, 0)
+depth = 10.0
+
+[node name="CSGPolygon3D15" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=843342919]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -24, 10.875486, -142)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(5, -24, -8, -24, -9, -14, -1, -14, -1, 3, 5, 2, 6, -8)
+depth = 10.0
+
+[node name="CSGPolygon3D16" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=476708861]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 29.60423, 11.581102, -123.88997)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(6.229698, -22.217056, 19.104462, -25.246925, 14.2956505, -32.104843, -2.1903877, -30.638344, -6.3511963, -11.085754, -13.825344, -3.5245361, -5.4606705, 10.421631, 8.08585, 8.732475, 5.5910645, -5.985771)
+depth = 10.0
+
+[node name="CSGPolygon3D24" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=1276081339]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 32.551598, 21.35111, -124.38732)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(6.229698, -22.217056, 19.104462, -25.246925, 14.2956505, -32.104843, -2.1903877, -30.638344, -6.3511963, -11.085754, 4.7053185, -9.396568)
+depth = 10.0
+
+[node name="CSGPolygon3D17" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=1311477540]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -23, 10.875494, -5)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-4, -6, -2, 11, 19.837465, 15.045078, 24.553888, 10.472216, 6.383335, 5.9572115, 5, -7)
+depth = 10.0
+
+[node name="CSGPolygon3D18" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=1914199208]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 13, 9.875492, -22)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-8, 1, -2.6262732, 8.291004, 5, 9, 12, 2, 7, -7)
+depth = 10.0
+
+[node name="CSGPolygon3D22" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=1703273870]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 13, 19.254166, -22)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-6.12783, 3.681837, -2.6262732, 8.291004, 5, 9, 8.710819, 3.77067, 5.304365, -1.3824177)
+depth = 10.0
+
+[node name="CSGPolygon3D19" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=1030279042]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 13, 9.875492, -49.058914)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-8, 1, -3.0711384, 5.1868668, 5.9208565, 4.6248703, 21.65686, 25.699867, 29.243866, 16.70787, 7, -7)
+depth = 10.0
+
+[node name="CSGPolygon3D27" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=329424743]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 13, 19.875492, -49.058914)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(7.3646164, 5.7546196, 21.65686, 25.699867, 29.243866, 16.70787, 14.856037, 0.9731064)
+depth = 10.0
+
+[node name="CSGPolygon3D46" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=126498316]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 13, 29.875492, -49.058914)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(7.3646164, 5.7546196, 14.576466, 15.566017, 23.31733, 10.292633, 14.856037, 0.9731064)
+depth = 10.0
+
+[node name="CSGPolygon3D20" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=159665775]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -8.124506, 0)
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+depth = 10.0
+
+[node name="CSGPolygon3D21" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=7861923]
+transform = Transform3D(6.362594, 0, 0, 0, -3.5454858e-07, 1, 0, -8.111126, -4.371139e-08, -45.493874, 11.152342, -21.656315)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-0.030436829, -0.7738945, 0, 1, 1.2938721, 0.9671531, 0.89436007, 0.28234106, 1.1607014, -0.41407782)
+depth = 8.0
+
+[node name="CSGPolygon3D30" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=1814149638]
+transform = Transform3D(6.362594, 0, 0, 0, -3.5454858e-07, 1, 0, -8.111126, -4.371139e-08, -45.493874, 18.62251, -21.656315)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-0.030436829, -0.7738945, 0, 1, 1.2938721, 0.9671531, 0.89436007, 0.28234106, 0.45951366, 0.12343836, 0.5738301, -0.55795264)
+depth = 8.0
+
+[node name="CSGPolygon3D23" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=6705036]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -24, 10.875494, 11)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(3, -12, -6, -14, -8, -10, 0, -7, -1, 3, 5, 2, 6, -8)
+depth = 10.0
+
+[node name="CSGPolygon3D31" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=645927176]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -24, 20.875494, 11)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(3, -12, -6, -14, -8, -10, 0, -7, -0.44927216, -2.5057316, 5.602947, -2.7406883, 6, -8)
+depth = 10.0
+
+[node name="CSGPolygon3D25" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=2027689246]
+transform = Transform3D(0.614299, -0.78907335, -3.4491492e-08, 0, -4.371139e-08, 1, -0.78907335, -0.614299, -2.6851863e-08, -72.32472, 10.875493, -26.784801)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-4, -6, -15.006351, 17.966919, -9.540146, 31.303833, 10.06319, 17.019073, 18.217777, 21.07109, 20.286972, 9.569092, 6.383335, 5.9572115, 4, 0, 5, -7)
+depth = 10.0
+
+[node name="CSGPolygon3D33" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=111079136]
+transform = Transform3D(0.614299, -0.78907335, -3.4491492e-08, 0, -4.371139e-08, 1, -0.78907335, -0.614299, -2.6851863e-08, -72.32472, 20.875492, -26.784801)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-4, -6, -8.94252, 4.876793, 1.3400764, 23.612228, 10.06319, 17.019073, 18.217777, 21.07109, 20.286972, 9.569092, 6.383335, 5.9572115, 4, 0, 5, -7)
+depth = 10.0
+
+[node name="CSGPolygon3D47" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=586621850]
+transform = Transform3D(0.614299, -0.78907335, -3.4491492e-08, 0, -4.371139e-08, 1, -0.78907335, -0.614299, -2.6851863e-08, -72.32472, 30.875492, -26.784801)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-6.37414, -11.62595, -8.94252, 4.876793, 6.383335, 5.9572115, 10.495398, -10.463917)
+depth = 10.0
+
+[node name="CSGPolygon3D28" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=1648256451]
+transform = Transform3D(0.614299, -0.78907335, -3.4491492e-08, 0, -4.371139e-08, 1, -0.78907335, -0.614299, -2.6851863e-08, -49.044464, 10.875493, -100.37689)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-19.065277, 37.589844, -3.678997, 34.312073, 1.3370132, 23.203125, 9.199608, 17.458344, 18.095493, 24.383865, 18.237007, 8.0271225, 7.127056, 5.189804, -3.0477867, 9.860947, -6.0683136, 18.40667)
+depth = 10.0
+
+[node name="CSGPolygon3D29" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=658463048]
+transform = Transform3D(0.614299, -0.78907335, -3.4491492e-08, 0, -4.371139e-08, 1, -0.78907335, -0.614299, -2.6851863e-08, -97.17845, 10.875493, -60.79515)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-37.38759, 6.443718, -12.485981, 13.223175, -24.01949, 27.547379, -9.540146, 31.303833, 0.2019043, 18.516556, -3.1818123, 7.2635727, -7.3777466, 2.5477905, -32.30806, -1.0624084)
+depth = 10.0
+
+[node name="CSGPolygon3D32" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=1921767896]
+transform = Transform3D(0.5935594, -0.8047902, -3.51785e-08, 0, -4.371139e-08, 1, -0.8047902, -0.5935594, -2.5945305e-08, 90.49159, 10.87549, -75.20319)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-16, 8, -34, 9, -33.211906, 22.800297, -17.07859, 22.067978, -12.728714, 29.784748, 0.13331604, 29.021595, -4.612854, 13.221943, 5, 7, 26.15622, 23.615955, 28, 8, 7, -7)
+depth = 10.0
+
+[node name="CSGPolygon3D35" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=84495383]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 65.61356, 10.876509, 68.88162)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-21, 15, -11, 21, -8, 4, -1, 1, 5, -11, -7, -18, -12, -7, -27.775272, -13.899063, -34, -7, -22, 0)
+depth = 10.0
+
+[node name="CSGPolygon3D37" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=1649093665]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 65.61356, 20.876509, 68.88162)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-21, 15, -11, 21, -8, 4, -1, 1, 5, -11, -7, -18, -12, -7, -27.775272, -13.899063, -34, -7, -22, 0)
+depth = 10.0
+
+[node name="CSGPolygon3D45" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=684357827]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 65.61356, 30.876509, 68.88162)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-21, 15, -11, 21, -8, 4, -11.882862, -7.309807, -22.48294, -12.269783, -29.28904, 0.34784698, -21.052856, 3.3998184)
+depth = 10.0
+
+[node name="CSGPolygon3D36" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=1538621194]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 73, 10.875498, 119)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-12, 10, 0, 19, 14.26165, 18.19516, 22, 29, 34, 19, 14, -3)
+depth = 10.0
+
+[node name="CSGPolygon3D38" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=1368325147]
+transform = Transform3D(0.99998623, -0.0052534193, -2.296332e-10, 0, -4.371139e-08, 1, -0.0052534193, -0.99998623, -4.371078e-08, 5.9921227, 10.875494, 74.831375)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-39, -2, -26, 8, 9, 12, 12, -1, -13.633603, -2.9385452, -26, -9)
+depth = 10.0
+
+[node name="CSGPolygon3D39" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=340223740]
+transform = Transform3D(0.99998623, -0.0052534193, -2.296332e-10, 0, -4.371139e-08, 1, -0.0052534193, -0.99998623, -4.371078e-08, 5.9921227, 18.875494, 74.831375)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-39, -2, -26, 8, -16.256456, 9.063644, -16.013802, 1.9001007, -30.950966, -6.951828)
+depth = 10.0
+
+[node name="CSGPolygon3D40" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=123731426]
+transform = Transform3D(0.99998623, -0.0052534193, -2.296332e-10, 0, -4.371139e-08, 1, -0.0052534193, -0.99998623, -4.371078e-08, 5.9921227, 18.875494, 74.831375)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-7.7479, 9.632957, 9, 12, 11.44363, 3.2583313, -6.223069, 2.7856903)
+depth = 10.0
+
+[node name="CSGPolygon3D41" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=822832236]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -94.74943, 11.046259, 74.25637)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-16.398727, -27.66359, -13.711159, 1.4363937, -31.800934, 18.081955, -30.624207, 27.691597, -4.366646, 11.98053, -7.0006027, -33.159264)
+depth = 10.0
+
+[node name="CSGPolygon3D42" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=1632129916]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -39.793346, 11.521673, 77.494)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-15.702419, -16.419968, -15.2115135, 9.928955, 0.5242195, 13.08992, -0.9125328, -15.932411)
+depth = 10.0
+
+[node name="CSGPolygon3D44" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=1265961920]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -44.154114, 20.521673, 70.76169)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-15.702419, -16.419968, -15.391476, -0.52871704, -15.2115135, 9.928955, 0.5242195, 13.08992, -0.06827545, 0.11928558, -4.11285, -6.5787582, -9.330486, -15.965782)
+depth = 10.0
+
+[node name="CSGPolygon3D43" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=66373174]
+transform = Transform3D(0.9884558, 0.14904962, -0.027190473, 0.027087273, 0.0027227255, 0.9996294, 0.14906842, -0.988826, -0.0013460537, -132.67503, 10.715761, 19.38754)
+material_override = ExtResource("3_x6nmu")
+use_collision = true
+collision_layer = 5
+collision_mask = 2
+polygon = PackedVector2Array(-12.942337, -16.754435, -16.352371, 6.0725536, -14.877975, 32.59626, 0.043121338, 33.20273, 1, 0, 4.798462, -8.112686)
+depth = 10.0
+
+[node name="Ladder" type="Node3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=1031977704]
+
+[node name="CSGPolygon7" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide/Ladder" unique_id=1957429876]
+transform = Transform3D(-4.37114e-08, 0, 6, 0, 1, 0, -1, 0, -2.62268e-07, -2.1655788, 3.3996477, 48.935677)
+use_collision = true
+collision_mask = 2
+polygon = PackedVector2Array(4.5503044, -2.61589, 11.075413, 5.567466, 11.037785, 5.6945705)
+material = ExtResource("3_x6nmu")
+
+[node name="DirectionalJumpPad" parent="TemplateMap/Map/WallrunZone/NoSlide/Ladder" unique_id=1378070589 instance=ExtResource("7_l8s55")]
+transform = Transform3D(-0.37062216, 0, -0.92878366, 0, 1, 0, 0.92878366, 0, -0.37062216, 8.025376, 1.9415932, -69.76161)
+bounce_force = 0.0
+overrided_direction = Vector3(0, 28, 45)
+
+[node name="DirectionalJumpPad2" parent="TemplateMap/Map/WallrunZone/NoSlide/Ladder" unique_id=779858722 instance=ExtResource("7_l8s55")]
+transform = Transform3D(-0.05167356, 0, -0.99866396, 0, 1, 0, 0.99866396, 0, -0.05167356, 2.3101387, 21.689125, -95.440575)
+bounce_force = 0.0
+overrided_direction = Vector3(0, 28, 45)
+
+[node name="VerticalJumpPad" parent="TemplateMap/Map/WallrunZone/NoSlide/Ladder" unique_id=144913931 instance=ExtResource("4_53cgy")]
+transform = Transform3D(-0.9171574, 0, -0.39852494, 0, 1, 0, 0.39852494, 0, -0.9171574, 82.14147, 1.5568914, -85.045555)
+bounce_force = 50.0
+
+[node name="VerticalJumpPad2" parent="TemplateMap/Map/WallrunZone/NoSlide/Ladder" unique_id=1009525900 instance=ExtResource("4_53cgy")]
+transform = Transform3D(-0.9171574, 0, -0.39852494, 0, 1, 0, 0.39852494, 0, -0.9171574, 123.042114, 1.5568914, 15.971436)
+bounce_force = 50.0
+
+[node name="LootableDash" parent="TemplateMap/Map" unique_id=498832737 instance=ExtResource("8_3m4ir")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.1340036, 0)
+
+[node name="LootableDash2" parent="TemplateMap/Map" unique_id=317806946 instance=ExtResource("8_3m4ir")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.39589, 10.26289, -22.590197)
+
+[node name="LootableDash3" parent="TemplateMap/Map" unique_id=96202975 instance=ExtResource("8_3m4ir")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.06142, 11.337767, -16.871758)
+
+[connection signal="pressed" from="Menu/PanelContainer/MarginContainer/VBoxContainer/Host" to="." method="_on_host_pressed"]
+[connection signal="pressed" from="Menu/PanelContainer/MarginContainer/VBoxContainer/Join" to="." method="_on_join_pressed"]

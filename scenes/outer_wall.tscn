@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://vk8e3ro7mpdp"]
+
+[ext_resource type="PackedScene" uid="uid://bhjmtowjn4a2e" path="res://assets/Blender/outer-wall.blend" id="1_tqki4"]
+[ext_resource type="Material" uid="uid://cmlreoo2qwhp4" path="res://assets/Arts/structure_material.tres" id="2_y1e54"]
+
+[node name="outer-wall" unique_id=1368446115 instance=ExtResource("1_tqki4")]
+
+[node name="Cylinder" parent="." index="0" unique_id=2114067408]
+material_override = ExtResource("2_y1e54")
