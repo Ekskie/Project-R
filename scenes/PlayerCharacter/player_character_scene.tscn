@@ -7,6 +7,7 @@
 [ext_resource type="Script" uid="uid://hc1xroood24q" path="res://scenes/PlayerCharacter/StateMachine/slide_state_script.gd" id="10_poibi"]
 [ext_resource type="Script" uid="uid://c4skioddhqatw" path="res://scenes/PlayerCharacter/StateMachine/dash_state_script.gd" id="11_khex2"]
 [ext_resource type="Script" uid="uid://bq1stj2mujnp2" path="res://scenes/PlayerCharacter/StateMachine/wallrun_state_script.gd" id="12_5fuve"]
+[ext_resource type="Script" uid="uid://k8drevrik0pe" path="res://scenes/PlayerCharacter/weapon.gd" id="14_1v44t"]
 [ext_resource type="LabelSettings" uid="uid://bs0stms0b56kp" path="res://assets/Arts/label_settings.tres" id="14_gfbru"]
 [ext_resource type="Shader" uid="uid://b34228uop3gdf" path="res://scenes/PlayerCharacter/Shaders/speed_lines_shader.gdshader" id="14_jv0i6"]
 [ext_resource type="Script" uid="uid://dx02l6p6behb8" path="res://scenes/PlayerCharacter/UI/hud_script.gd" id="16_5jm78"]
@@ -52,6 +53,9 @@ font_size = 14
 
 [sub_resource type="LabelSettings" id="LabelSettings_i527v"]
 
+[sub_resource type="BoxMesh" id="BoxMesh_1v44t"]
+size = Vector3(0.1, 0.1, 0.6)
+
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_5yjma"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6bkys"]
@@ -92,6 +96,12 @@ health = 100
 health_max = 100
 desired_move_speed_curve = SubResource("Curve_s7fsc")
 in_air_move_speed_curve = SubResource("Curve_gfbru")
+<<<<<<< Updated upstream
+=======
+jump_time_to_fall = 0.4
+has_dash_skill = true
+nb_dashs_allowed = 100
+>>>>>>> Stashed changes
 rock_scene = ExtResource("2_1v44t")
 throw_force = 25.0
 
@@ -234,6 +244,18 @@ exclude_parent = false
 target_position = Vector3(-1, 0, 0)
 collision_mask = 4
 debug_shape_custom_color = Color(0.91764706, 0.79607844, 0.18039216, 1)
+
+[node name="RayCast3D" type="RayCast3D" parent="CameraHolder/Camera" unique_id=100923270]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 100)
+
+[node name="Weapon" type="Node3D" parent="CameraHolder/Camera" unique_id=1960601122 node_paths=PackedStringArray("weapon_model", "camera_object")]
+script = ExtResource("14_1v44t")
+weapon_model = NodePath("MeshInstance3D")
+camera_object = NodePath("../..")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CameraHolder/Camera/Weapon" unique_id=1412093596]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, -0.2, -0.5)
+mesh = SubResource("BoxMesh_1v44t")
 
 [node name="Hitbox" type="CollisionShape3D" parent="." unique_id=1074894772]
 shape = SubResource("CapsuleShape3D_5yjma")
@@ -699,4 +721,14 @@ offset_bottom = 559.0
 text = "Ammo: 1"
 label_settings = SubResource("LabelSettings_1v44t")
 
+<<<<<<< Updated upstream
+=======
+[node name="AmmoLabelText" type="Label" parent="HUD" unique_id=1953851672]
+unique_name_in_owner = true
+offset_left = 289.0
+offset_top = 20.0
+offset_right = 290.0
+offset_bottom = 43.0
+
+>>>>>>> Stashed changes
 [connection signal="change_fov" from="StateMachine" to="CameraHolder" method="change_fov"]

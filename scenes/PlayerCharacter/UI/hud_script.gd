@@ -5,6 +5,8 @@ class_name HUD
 #player character reference variable
 @export var play_char : PlayerCharacter
 
+
+
 #label references variables
 @onready var current_state_label_text: Label = %CurrentStateLabelText
 @onready var desired_move_speed_label_text: Label = %DesiredMoveSpeedLabelText
@@ -27,6 +29,8 @@ class_name HUD
 @onready var current_fov_label_text: Label = %CurrentFOVLabelText
 @onready var camera_bob_vertical_offset_label_text: Label = %CameraBobVerticalOffsetLabelText
 @onready var speed_lines_container: ColorRect = %SpeedLinesContainer
+@onready var ammo_label_text: Label = %AmmoLabelText
+
 
 func _process(_delta : float) -> void:
 	display_current_FPS()
@@ -56,6 +60,26 @@ func display_properties() -> void:
 	current_fov_label_text.set_text(str(play_char.cam.fov))
 	camera_bob_vertical_offset_label_text.set_text(str(round_to_3_decimals(play_char.cam.v_offset)))
 	
+	#var weapon = play_char.get_node_or_null("CameraHolder/Camera/Weapon")
+		#if weapon and ammo_label_text:
+			#
+		#if weapon.is_reloading:
+				#ammo_label_text.set_text("Reloading...")
+			#elif weapon.infinite_reserve:
+				#ammo_label_text.set_text(str(weapon.current_ammo) + " / ∞")
+			#else:
+				#ammo_label_text.set_text(str(weapon.current_ammo) + " / " + str(weapon.reserve_ammo))
+		#
+		
+	
+	
+	
+	
+	
+	
+	
+	
+	
 func display_current_FPS() -> void:
 	frames_per_second_label_text.set_text(str(Engine.get_frames_per_second()))
 
@@ -68,9 +92,6 @@ func display_speed_lines(value : bool) -> void:
 	
 func round_to_3_decimals(value: float) -> float:
 	return round(value * 1000.0) / 1000.0
-	
-	
-	
-	
+
 	
 	

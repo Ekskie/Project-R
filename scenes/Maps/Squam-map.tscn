@@ -1,7 +1,10 @@
 [gd_scene format=3 uid="uid://kt7hquwnsn4w"]
 
+<<<<<<< Updated upstream
 [ext_resource type="Script" uid="uid://smr648vxugcw" path="res://scenes/world2.gd" id="1_nwrhd"]
 [ext_resource type="PackedScene" uid="uid://dw7ikjxmwgws1" path="res://scenes/ChatHud/chatHud.tscn" id="2_in1ei"]
+=======
+>>>>>>> Stashed changes
 [ext_resource type="PackedScene" uid="uid://vk8e3ro7mpdp" path="res://scenes/outer_wall.tscn" id="2_nwrhd"]
 [ext_resource type="Material" uid="uid://3ub3li5nvjsw" path="res://assets/Arts/structure_material_2.tres" id="3_x6nmu"]
 [ext_resource type="PackedScene" uid="uid://b84t3rpy4cau8" path="res://scenes/MovementModifiers/jumpPads/verticalJumpPad/vertical_jump_pad_scene.tscn" id="4_53cgy"]
@@ -13,11 +16,16 @@
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
 ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
 
+<<<<<<< Updated upstream
 [sub_resource type="Sky" id="Sky_rp6rt"]
+=======
+[sub_resource type="Sky" id="Sky_3m4ir"]
+>>>>>>> Stashed changes
 sky_material = SubResource("ProceduralSkyMaterial_in1ei")
 
 [sub_resource type="Environment" id="Environment_x6nmu"]
 background_mode = 2
+<<<<<<< Updated upstream
 sky = SubResource("Sky_rp6rt")
 tonemap_mode = 2
 glow_enabled = true
@@ -93,6 +101,13 @@ spawn_path = NodePath("../TemplateMap/PlayerCharacter")
 
 [node name="Objects" type="MultiplayerSpawner" parent="." unique_id=1301671419]
 spawn_path = NodePath("../TemplateMap")
+=======
+sky = SubResource("Sky_3m4ir")
+tonemap_mode = 2
+glow_enabled = true
+
+[node name="SquamMap" type="Node" unique_id=1669361644]
+>>>>>>> Stashed changes
 
 [node name="TemplateMap" type="Node3D" parent="." unique_id=907520887]
 
@@ -105,6 +120,7 @@ environment = SubResource("Environment_x6nmu")
 transform = Transform3D(-0.86602384, -0.43301564, 0.2500005, 0, 0.49999815, 0.8660265, -0.50000286, 0.7499995, -0.4330103, -22, 59.414856, 4)
 shadow_enabled = true
 
+<<<<<<< Updated upstream
 [node name="PlayerCharacter" type="Node3D" parent="TemplateMap" unique_id=202358879]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.7646, 1.50542, -19.959)
 
@@ -114,6 +130,16 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.7646, 1.50542, -19.959)
 use_collision = true
 collision_mask = 2
 radius = 170.0664
+=======
+[node name="Map" type="Node3D" parent="TemplateMap" unique_id=2020784554]
+
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="TemplateMap/Map" unique_id=1902352136]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.3633232, 0, 3.9143524)
+use_collision = true
+collision_mask = 2
+radius = 155.0
+sides = 20
+>>>>>>> Stashed changes
 
 [node name="CSGCylinder3D" type="CSGCylinder3D" parent="TemplateMap/Map/CSGCylinder3D" unique_id=27377944]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -39.224174, 1.8117676, -18.282127)
@@ -131,6 +157,7 @@ height = 2.2763672
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -38.458057, 1.8251953, -28.705265)
 height = 2.2763672
 
+<<<<<<< Updated upstream
 [node name="CSGCylinder3D2" type="CSGCylinder3D" parent="TemplateMap/Map" unique_id=720624684]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.32964182, 89.30356, -0.6179552)
 visible = false
@@ -142,6 +169,8 @@ radius = 170.0664
 transform = Transform3D(-0.8664004, 0, 0.49934992, 0, 1, 0, -0.49934992, 0, -0.8664004, 52.741062, 34.88664, -65.17213)
 bounce_force = 50.0
 
+=======
+>>>>>>> Stashed changes
 [node name="outer-wall" parent="TemplateMap/Map" unique_id=1368446115 instance=ExtResource("2_nwrhd")]
 transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, -0.010120392, 45.471157, 4.2148323)
 
@@ -150,7 +179,11 @@ transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, -0.010120392, 45.471157
 [node name="WalSlideFree" type="Node3D" parent="TemplateMap/Map/WallrunZone" unique_id=225853864]
 
 [node name="CSGPolygon3D37" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/WalSlideFree" unique_id=204226341]
+<<<<<<< Updated upstream
 transform = Transform3D(0.9848077, -0.17364818, 0, -7.590403e-09, -4.304731e-08, 1, -0.17364818, -0.9848077, -4.371139e-08, 2.1770582, 10.875493, 24.883875)
+=======
+transform = Transform3D(0.98480767, -0.17364818, -7.590404e-09, 0, -4.3711385e-08, 1, -0.17364818, -0.98480767, -4.304731e-08, 2.1770582, 10.875493, 24.883875)
+>>>>>>> Stashed changes
 material_override = ExtResource("5_53cgy")
 use_collision = true
 collision_layer = 5
@@ -200,7 +233,11 @@ material_override = ExtResource("5_53cgy")
 use_collision = true
 collision_layer = 5
 collision_mask = 2
+<<<<<<< Updated upstream
 polygon = PackedVector2Array(-17, -14, -15, -5, -6, 9, 2.8514748, 3.4496794, 8, -5, 6.5395164, -18.018667, -10, -36, -17, -29, -4, -15)
+=======
+polygon = PackedVector2Array(-17, -14, -16.379593, -3.6761637, -3.776722, 10.707602, 2.8514748, 3.4496794, 8, -5, 6.5395164, -18.018667, -10, -36, -17, -29, -4, -15)
+>>>>>>> Stashed changes
 depth = 10.0
 
 [node name="CSGPolygon3D41" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/WalSlideFree" unique_id=1413196594]
@@ -412,6 +449,7 @@ depth = 10.0
 
 [node name="NoSlide" type="Node3D" parent="TemplateMap/Map/WallrunZone" unique_id=1711566355]
 
+<<<<<<< Updated upstream
 [node name="CSGPolygon3D" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=869041382]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -8.124506, 0)
 use_collision = true
@@ -496,6 +534,8 @@ collision_layer = 5
 collision_mask = 2
 depth = 10.0
 
+=======
+>>>>>>> Stashed changes
 [node name="CSGPolygon3D7" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=1312300721]
 transform = Transform3D(6.362594, 0, 0, 0, -3.5454858e-07, 1, 0, -8.111126, -4.371139e-08, 43.582443, 11.15234, -21.656315)
 material_override = ExtResource("3_x6nmu")
@@ -613,6 +653,7 @@ collision_mask = 2
 polygon = PackedVector2Array(7.3646164, 5.7546196, 14.576466, 15.566017, 23.31733, 10.292633, 14.856037, 0.9731064)
 depth = 10.0
 
+<<<<<<< Updated upstream
 [node name="CSGPolygon3D20" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=159665775]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -8.124506, 0)
 use_collision = true
@@ -620,6 +661,8 @@ collision_layer = 5
 collision_mask = 2
 depth = 10.0
 
+=======
+>>>>>>> Stashed changes
 [node name="CSGPolygon3D21" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide" unique_id=7861923]
 transform = Transform3D(6.362594, 0, 0, 0, -3.5454858e-07, 1, 0, -8.111126, -4.371139e-08, -45.493874, 11.152342, -21.656315)
 material_override = ExtResource("3_x6nmu")
@@ -818,6 +861,16 @@ collision_mask = 2
 polygon = PackedVector2Array(4.5503044, -2.61589, 11.075413, 5.567466, 11.037785, 5.6945705)
 material = ExtResource("3_x6nmu")
 
+<<<<<<< Updated upstream
+=======
+[node name="CSGPolygon8" type="CSGPolygon3D" parent="TemplateMap/Map/WallrunZone/NoSlide/Ladder" unique_id=527613964]
+transform = Transform3D(0.7486434, 0, -3.9778373, 0, 1, 0, 0.66297287, 0, 4.4918604, 16.365423, 12.386891, -22.51558)
+use_collision = true
+collision_mask = 2
+polygon = PackedVector2Array(4.5503044, -2.61589, 17.962267, 8.531121, 17.90166, 7.8374853)
+material = ExtResource("3_x6nmu")
+
+>>>>>>> Stashed changes
 [node name="DirectionalJumpPad" parent="TemplateMap/Map/WallrunZone/NoSlide/Ladder" unique_id=1378070589 instance=ExtResource("7_l8s55")]
 transform = Transform3D(-0.37062216, 0, -0.92878366, 0, 1, 0, 0.92878366, 0, -0.37062216, 8.025376, 1.9415932, -69.76161)
 bounce_force = 0.0
@@ -844,6 +897,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.39589, 10.26289, -22.590197
 
 [node name="LootableDash3" parent="TemplateMap/Map" unique_id=96202975 instance=ExtResource("8_3m4ir")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.06142, 11.337767, -16.871758)
+<<<<<<< Updated upstream
 
 [connection signal="pressed" from="Menu/PanelContainer/MarginContainer/VBoxContainer/Host" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="Menu/PanelContainer/MarginContainer/VBoxContainer/Join" to="." method="_on_join_pressed"]
+=======
+>>>>>>> Stashed changes

@@ -354,8 +354,13 @@ func _unhandled_input(event) -> void:
 		pitch = clamp(pitch, deg_to_rad(-camera_limit), deg_to_rad(camera_limit))
 		if cam_holder:
 			cam_holder.rotation.x = pitch
+<<<<<<< Updated upstream
 	if event.is_action_pressed("fire"):
 		throw_rock()
+=======
+	#if event.is_action_pressed("fire"):
+		#throw_rock()
+>>>>>>> Stashed changes
 		
 func _process(delta: float) -> void:
 	if not multiplayer.has_multiplayer_peer() or not is_multiplayer_authority(): return

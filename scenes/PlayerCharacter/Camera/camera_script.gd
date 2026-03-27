@@ -1,6 +1,8 @@
 extends Node3D
 class_name CameraObject 
 
+@onready var aim_raycast: RayCast3D = $Camera/RayCast3D
+
 #camera variables
 @export_group("Camera variables")
 @export_range(0.0, 0.5, 0.001) var x_axis_sensibility : float = 0.05
@@ -62,6 +64,11 @@ var step_timer : float = 0.0
 
 @export_group("Mouse variables")
 var mouse_free : bool = false
+
+@export_group("Shooting & Aiming")
+@export var recoil_recovery_speed : float = 10.0
+var current_recoil : Vector2 = Vector2.ZERO
+var target_recoil : Vector2 = Vector2.ZERO
 
 @export_group("Keybind variables")
 @export var zoom_action : StringName = "play_char_zoom_action"
@@ -128,6 +135,8 @@ func _process(delta : float) -> void:
 	bob(delta)
 	zoom()
 	mouse_mode()
+	
+	handle_recoil(delta)
 	
 func tilt(delta : float) -> void:
 	# --- Forward/Backward Tilt (Tweened) ---
@@ -260,3 +269,38 @@ func mouse_mode() -> void:
 	if Input.is_action_just_pressed(mouse_mode_action): mouse_free = !mouse_free
 	if !mouse_free: Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	else: Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+
+# --- NEW SHOOTING & RECOIL LOGIC ---
+
+func handle_recoil(delta: float) -> void:
+	# Smoothly interpolate target recoil back to zero
+	target_recoil = target_recoil.lerp(Vector2.ZERO, recoil_recovery_speed * delta)
+	var recoil_diff = target_recoil - current_recoil
+	current_recoil += recoil_diff
+	
+	# Apply pitch (x) to the Camera3D and yaw (y) to the base Node3D
+	camera.rotation.x = clamp(camera.rotation.x + deg_to_rad(recoil_diff.x), deg_to_rad(max_up_angle_view), deg_to_rad(max_down_angle_view))
+	rotate_y(deg_to_rad(recoil_diff.y))
+
+func apply_recoil(recoil_pitch: float, recoil_yaw: float) -> void:
+	# Call this from your Weapon/Player script when firing!
+	# Example: camera_object.apply_recoil(1.5, randf_range(-0.5, 0.5))
+	target_recoil.x += recoil_pitch
+	target_recoil.y += recoil_yaw
+
+func get_aim_target() -> Dictionary:
+	# Used for Hitscan weapons. Returns data about what the player is looking at.
+	if aim_raycast and aim_raycast.is_colliding():
+		return {
+			"hit": true,
+			"position": aim_raycast.get_collision_point(),
+			"normal": aim_raycast.get_collision_normal(),
+			"collider": aim_raycast.get_collider()
+		}
+	
+	# If no hit, return a point far off in the distance
+	var fallback_pos = camera.global_position - camera.global_transform.basis.z * 1000.0
+	return {
+		"hit": false,
+		"position": fallback_pos
+	}

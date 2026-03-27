@@ -1,0 +1,163 @@
+extends Node
+
+@export_category("Settings")
+@export var names : Array[String]
+@export var names_ban : Array[String]
+
+@export_category("Menu")
+@export var main_menu : CanvasLayer
+@export var BackgroundScene : Node3D
+@export var hud : CanvasLayer
+@export var address_entry : LineEdit
+@export var port_entry : LineEdit
+@export var nickname : LineEdit
+
+@export_category("World")
+@export var map_scene: PackedScene
+@export var player_scene = preload("res://scenes/PlayerCharacter/player_character_scene.tscn")
+@export var level_container : Node # Where the Map gets injected
+@export var players_spawn : Node3D # Make sure you have a Node3D in Main called this
+
+var DEFAULT_PORT = 25565
+var enet_peer = ENetMultiplayerPeer.new()
+
+func _ready():
+	if OS.has_feature("dedicated_server"): host_own(); return; #if server
+	print("Client")
+
+# Helper function to grab the port from the UI if it exists, otherwise use default
+func get_target_port() -> int:
+	if port_entry and port_entry.text.is_valid_int():
+		return port_entry.text.to_int()
+	return DEFAULT_PORT
+
+func host_own():
+	var port = get_target_port()
+	enet_peer.create_server(port)
+	multiplayer.multiplayer_peer = enet_peer
+	multiplayer.peer_connected.connect(add_player)
+	multiplayer.peer_disconnected.connect(remove_player)
+	@warning_ignore("int_as_enum_without_cast", "int_as_enum_without_match")
+	var adr = str(IP.resolve_hostname(str(OS.get_environment("COMPUTERNAME")),1)) + ", " + str(port)
+	print("Server: \n" + adr)
+	
+	start_game()
+
+func disconnect_enet():
+	if multiplayer.multiplayer_peer: multiplayer.multiplayer_peer.close();
+	multiplayer.multiplayer_peer = null
+	get_tree().reload_current_scene()
+
+
+func upnp_setup():
+	var upnp = UPNP.new()
+	var port = get_target_port()
+	
+	var discover_result = upnp.discover()
+	assert(discover_result == UPNP.UPNP_RESULT_SUCCESS, \
+		"UPNP Discover Failed! Error %s" % discover_result)
+	
+	assert(upnp.get_gateway() and upnp.get_gateway().is_valid_gateway(), \
+		"UPNP Invalid Getaway!")
+	
+	var map_result = upnp.add_port_mapping(port)
+	assert(map_result == UPNP.UPNP_RESULT_SUCCESS, \
+		"UPNP Port Mapping Failed! Error %s" % map_result)
+	
+	print("join: %s" % upnp.query_external_address())
+
+func _on_host_pressed():
+	var port = get_target_port()
+	enet_peer.create_server(port)
+	multiplayer.multiplayer_peer = enet_peer
+	multiplayer.peer_connected.connect(add_player)
+	multiplayer.peer_disconnected.connect(remove_player)
+	
+	@warning_ignore("int_as_enum_without_cast", "int_as_enum_without_match")
+	var adr = str(IP.resolve_hostname(str(OS.get_environment("COMPUTERNAME")),1)) + ", " + str(port)
+	print("Hosting: " + adr)
+	
+	start_client()
+	start_game()
+	
+	add_player(multiplayer.get_unique_id())
+
+
+func _on_join_pressed():
+	var input_address = address_entry.text
+	if !input_address: input_address = address_entry.placeholder_text
+	
+	var ip = input_address
+	var join_port = get_target_port()
+	
+	# Check if the player pasted an IP and Port together (e.g. "my-server.playit.gg:12259")
+	if ":" in input_address:
+		var parts = input_address.split(":")
+		ip = parts[0]
+		if parts[1].is_valid_int():
+			join_port = parts[1].to_int()
+
+	print("Joining IP: " + str(ip) + " on Port: " + str(join_port))
+	enet_peer.create_client(ip, join_port)
+	multiplayer.multiplayer_peer = enet_peer
+	
+	await multiplayer.connected_to_server
+	
+	start_client()
+	start_game()
+
+func start_game():
+	# Instantiate the 3D map and add it to our game world container
+	if level_container and level_container.get_child_count() == 0:
+		var map_instance = map_scene.instantiate()
+		level_container.add_child(map_instance)
+
+func start_client():
+	var nick = check_legal_nick(nickname.text)
+	Global_self.nickname = nick
+	
+	if hud:
+		hud.nickname = nick
+		hud.chat_local("[color=grey]Welcome! %s to chat[/color]\n" % "T")
+		hud.show()
+		
+	if main_menu: 
+		main_menu.queue_free()
+		
+	if BackgroundScene:
+		BackgroundScene.queue_free()
+
+func check_legal_nick(n):
+	var an = n
+	#check
+	if !n or names_ban.has(n):
+		an = names.pick_random()
+	
+	return an
+
+
+func add_player(peer_id):
+	var player = player_scene.instantiate()
+	player.name = str(peer_id)
+	
+	if players_spawn:
+		players_spawn.add_child(player)
+	
+	player.world = self 
+	player.hud = hud 
+	player.emit_signal("hud_ready")
+	
+	await player._sync_nick
+	if hud:
+		hud.chat(str("[color=green]%s joined![/color]\n" %[player.nickname]))
+	
+	# Late join sync nicknames
+	if multiplayer.is_server():
+		for p in players_spawn.get_children():
+			if p != player and p.is_in_group("player"):
+				p.rpc_id(peer_id, "sync", p.nickname)
+
+func remove_player(peer_id):
+	if players_spawn:
+		var i = players_spawn.get_node_or_null(str(peer_id))
+		if i: i.queue_free()
